@@ -45,6 +45,7 @@ class CustomMetric(Metric):
             })
         return Data(df=pd.DataFrame.from_records(records))
 
+
 def s_main_i(x, xp):
     N = x.shape[0]
     M = xp.shape[0]
@@ -59,11 +60,11 @@ def s_main_i(x, xp):
 
     gamma = 1 / np.median(np.sqrt(dist1)) ** 2 / 2
 
-    term1 = np.sum(np.exp(-gamma * (dist1))) / N / (N - 1)
-    term2 = np.sum(np.exp(-gamma * (dist2))) / M / (M - 1)
-    term3 = -2 * np.sum(np.exp(-gamma * (dist3))) / N / M
+    term1 = np.sum(np.exp(-gamma * dist1)) / N / (N - 1)
+    term2 = np.sum(np.exp(-gamma * dist2)) / M / (M - 1)
+    term3 = -2 * np.sum(np.exp(-gamma * dist3)) / N / M
     output = 2 * (term1 + term2) + term3
-    print(output)
+    # print(output)
     return output if output >= 0 else 0
 
 
@@ -87,9 +88,9 @@ def s_int_i_j(x_i, xp_i, x_j, xp_j):
     gamma_i = 1 / np.median(np.sqrt(dist1_i)) ** 2 / 2
     gamma_j = 1 / np.median(np.sqrt(dist1_j)) ** 2 / 2
 
-    kernel1 = (1 + np.exp(-gamma_i * (dist1_i))) * (1 + np.exp(-gamma_j * (dist1_j)))
-    kernel2 = (1 + np.exp(-gamma_i * (dist2_i))) * (1 + np.exp(-gamma_j * (dist2_j)))
-    kernel3 = (1 + np.exp(-gamma_i * (dist3_i))) * (1 + np.exp(-gamma_j * (dist3_j)))
+    kernel1 = (1 + np.exp(-gamma_i * dist1_i)) * (1 + np.exp(-gamma_j * dist1_j))
+    kernel2 = (1 + np.exp(-gamma_i * dist2_i)) * (1 + np.exp(-gamma_j * dist2_j))
+    kernel3 = (1 + np.exp(-gamma_i * dist3_i)) * (1 + np.exp(-gamma_j * dist3_j))
     term1 = np.sum(kernel1) / N / (N - 1)
     term2 = np.sum(kernel2) / M / (M - 1)
     term3 = -2 * np.sum(kernel3) / N / M
@@ -107,7 +108,7 @@ def s_int_i_j(x_i, xp_i, x_j, xp_j):
     # main_j = main_j if main_j >= 0 else 0
 
     output = 2 * (term1 + term2) + term3
-    print(output)
+    # print(output)
     return output if output >= 0 else 0
 
 

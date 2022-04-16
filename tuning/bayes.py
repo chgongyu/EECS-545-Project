@@ -1,25 +1,15 @@
 import networkx as nx
-from gp import *
-from utils import *
+from tuning.gp import *
+from tuning.utils import *
 from gpytorch.kernels.kernel import AdditiveKernel, Kernel
 from botorch.acquisition import AcquisitionFunction
 from ax.models.torch.botorch_modular.surrogate import Surrogate
 from ax.modelbridge.registry import Models
 from ax import (
-    ComparisonOp,
-    ParameterType,
-    RangeParameter,
-    ChoiceParameter,
-    FixedParameter,
     SearchSpace,
     Experiment,
-    OutcomeConstraint,
-    OrderConstraint,
-    SumConstraint,
     OptimizationConfig,
     Objective,
-    Metric,
-    Data,
     Runner
 )
 from typing import Callable, Dict, Tuple
@@ -75,11 +65,11 @@ class BayesOpt_KSD():
     def get_sobol_weights(self):
         X, Xp = self._thresholding()
         weights = s_total(X, Xp)
-        print(weights)
+        # print(weights)
         if np.max(weights) <= 1e-8:
             return np.ones(weights.shape)
         weights /= np.max(weights)
-        print(weights)
+        # print(weights)
         return weights
 
     def get_cliques(self):
@@ -87,10 +77,11 @@ class BayesOpt_KSD():
         X, Xp = self._thresholding()
         # print(X.shape, Xp.shape)
         interact = s_int(X, Xp)
-        print(interact)
+        # print(interact)
         tau = 0.1 * np.max(interact)
         interact[interact < tau] = 0
-        interact /= np.sum(np.triu(interact))
+        if np.sum(np.triu(interact)) > 1e-8:
+            interact /= np.sum(np.triu(interact))
         # print(interact)
         # print(interact)
         n_nodes = X.shape[1]
