@@ -192,3 +192,8 @@ plt.figure()
 plt.plot(bo_val_loss)
 plt.xlabel('Tuning Iterations')
 plt.ylabel('Validation Loss')
+
+loss = np.array(bo_val_loss)
+np.minimum.accumulate(loss)
+plt.figure()
+plt.plot(np.minimum.accumulate(loss))
