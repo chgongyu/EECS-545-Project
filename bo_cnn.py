@@ -188,10 +188,6 @@ bo_val_loss = []
 for i,res in enumerate(cnn_bo.res):
     bo_val_loss.append(-1.0 * cnn_bo.res[i]['target'])
     
-plt.figure()
-plt.plot(bo_val_loss)
-plt.xlabel('Tuning Iterations')
-plt.ylabel('Validation Loss')
 
 loss = np.array(bo_val_loss)
 np.minimum.accumulate(loss)
