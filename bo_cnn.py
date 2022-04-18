@@ -16,7 +16,7 @@ Created on Sat Apr 16 15:32:01 2022
 from bayes_opt import BayesianOptimization
 import tensorflow as tf
 from tensorflow.keras import datasets, layers, models, callbacks
-from keras.optimizers import Adam, SGD, RMSprop, Adadelta, Adagrad, Adamax, Nadam, Ftrl
+from tensorflow.keras.optimizers import Adam, SGD, RMSprop, Adadelta, Adagrad, Adamax, Nadam, Ftrl
 import pandas as pd
 pd.set_option("display.max_columns", None)
 import matplotlib.pyplot as plt
