@@ -183,10 +183,6 @@ history = model.fit(train_images, train_labels, epochs=20, validation_split = 0.
 test_loss, test_acc = model.evaluate(test_images,  test_labels, verbose=2)
 
 print('Test accuracy: ', test_acc)
-
-bo_val_loss = []
-for i,res in enumerate(cnn_bo.res):
-    bo_val_loss.append(-1.0 * cnn_bo.res[i]['target'])
     
 # =============================================================================
 # plt.figure()
