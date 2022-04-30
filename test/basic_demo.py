@@ -11,7 +11,7 @@ from gpytorch.kernels import MaternKernel
 from botorch.acquisition.analytic import ExpectedImprovement
 
 from ax.plot.trace import optimization_trace_single_method
-from ax.utils.notebook.plotting import render, init_notebook_plotting
+from ax.utils.notebook.plotting import render
 
 search_space = SearchSpace(
     parameters=[

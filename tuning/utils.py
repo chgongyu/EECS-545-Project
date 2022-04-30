@@ -39,8 +39,8 @@ class CustomMetric(Metric):
                 "arm_name": arm_name,
                 "metric_name": self.name,
                 "trial_index": trial.index,
-                # "mean": self.evaluate(params),
-                "mean": self.evaluate(np.fromiter(params.values(), dtype=float)),
+                "mean": self.evaluate(params),
+                # "mean": self.evaluate(np.fromiter(params.values(), dtype=float)),
                 "sem": 0.0,
             })
         return Data(df=pd.DataFrame.from_records(records))
@@ -60,9 +60,9 @@ def s_main_i(x, xp):
 
     gamma = 1 / np.median(np.sqrt(dist1)) ** 2 / 2
 
-    term1 = np.sum(np.exp(-gamma * dist1)) / N / (N - 1)
-    term2 = np.sum(np.exp(-gamma * dist2)) / M / (M - 1)
-    term3 = -2 * np.sum(np.exp(-gamma * dist3)) / N / M
+    term1 = np.sum(1 + np.exp(-gamma * dist1)) / N / (N - 1)
+    term2 = np.sum(1 + np.exp(-gamma * dist2)) / M / (M - 1)
+    term3 = -2 * np.sum(1 + np.exp(-gamma * dist3)) / N / M
     output = 2 * (term1 + term2) + term3
     # print(output)
     return output if output >= 0 else 0
@@ -88,24 +88,12 @@ def s_int_i_j(x_i, xp_i, x_j, xp_j):
     gamma_i = 1 / np.median(np.sqrt(dist1_i)) ** 2 / 2
     gamma_j = 1 / np.median(np.sqrt(dist1_j)) ** 2 / 2
 
-    kernel1 = (1 + np.exp(-gamma_i * dist1_i)) * (1 + np.exp(-gamma_j * dist1_j))
-    kernel2 = (1 + np.exp(-gamma_i * dist2_i)) * (1 + np.exp(-gamma_j * dist2_j))
-    kernel3 = (1 + np.exp(-gamma_i * dist3_i)) * (1 + np.exp(-gamma_j * dist3_j))
+    kernel1 = np.exp(-gamma_i * dist1_i) * np.exp(-gamma_j * dist1_j)
+    kernel2 = np.exp(-gamma_i * dist2_i) * np.exp(-gamma_j * dist2_j)
+    kernel3 = np.exp(-gamma_i * dist3_i) * np.exp(-gamma_j * dist3_j)
     term1 = np.sum(kernel1) / N / (N - 1)
     term2 = np.sum(kernel2) / M / (M - 1)
     term3 = -2 * np.sum(kernel3) / N / M
-
-    # main_i1 = np.sum(np.exp(-gamma_i * (dist1_i)))/ N / (N - 1)
-    # main_i2 = np.sum(np.exp(-gamma_i * (dist2_i)))/ M / (M - 1)
-    # main_i3 = -2 * np.sum(np.exp(-gamma_i * (dist3_i))) / N / M
-    # main_i = 2*(main_i1 + main_i2) + main_i3
-    # # main_i = main_i if main_i >= 0 else 0
-
-    # main_j1 = np.sum(np.exp(-gamma_j * (dist1_j)))/ N / (N - 1)
-    # main_j2 = np.sum(np.exp(-gamma_j * (dist2_j)))/ M / (M - 1)
-    # main_j3 = -2 * np.sum(np.exp(-gamma_j * (dist3_j))) / N / M
-    # main_j = 2*(main_j1 + main_j2) + main_j3
-    # main_j = main_j if main_j >= 0 else 0
 
     output = 2 * (term1 + term2) + term3
     # print(output)
@@ -124,14 +112,18 @@ def s_int(X, Xp):
     main = s_main(X, Xp)
     for i in range(X.shape[1]):
         for j in range(X.shape[1]):
+          if i < j:
             interaction[i][j] = s_int_i_j(X[:, [i]], Xp[:, [i]], X[:, [j]], Xp[:, [j]])
+          elif i > j:
+            interaction[i][j] = interaction[j][i]
     np.fill_diagonal(interaction, main)
     return interaction
 
 
 def s_total(X, xp):
     total = np.zeros((X.shape[1],))
+    main = s_main(X, xp)
     interaction = s_int(X, xp)
     for i in range(X.shape[1]):
-        total[i] = np.sum(interaction[i])
+        total[i] = np.sum(interaction[i]) + main[i]
     return total
